@@ -20,21 +20,23 @@ namespace TEST
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             string url = "https://graph.facebook.com/me?access_token=abc";
-            _ = GetWebRes(url);
+            var result = await GetWebRes(url);
+            textBox1.Text = result.ToString();
         }
-        private async Task GetWebRes(string url)
+        private async Task<int> GetWebRes(string url)
         {
+            Error resTest = null;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HttpResponseMessage response = await client.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                var resTest = await response.Content.ReadAsAsync<Error>();
-                textBox1.Text = resTest.error.code.ToString();
+                resTest = await response.Content.ReadAsAsync<Error>();
             }
+            return resTest.error.code;
         }
     }
 }
